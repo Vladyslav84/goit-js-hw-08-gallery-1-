@@ -65,6 +65,7 @@ const images = [
     },
 ];
 
+
 const galleryEl = document.querySelector('.js-gallery');
 const ModalWindow = document.querySelector('.js-lightbox');
 const ModalWindowClose = document.querySelector('.lightbox__button')
@@ -76,6 +77,7 @@ ModalWindowClose.addEventListener('click', onModalWindowCloseClick);
 lightboxOverlayEl.addEventListener('click', onOverlayClick);
 
 let arrSrc = [];
+let activeIndex = null;
 
 function createImgList(images) {
 
@@ -96,14 +98,15 @@ function createImgList(images) {
 };
 
 galleryEl.insertAdjacentHTML('beforeend', createImgList(images));
+
 function onGalleryElClick(evt) {
     evt.preventDefault();
 
     window.addEventListener('keydown', onEscPressClose)
 
-    // const isGalleryImageEl = evt.target.classList.contains('gallery__image');
-
     lightboxImage.src = evt.target.getAttribute('data-source');
+
+
 
     ModalWindow.classList.add('is-open');
 
@@ -118,21 +121,24 @@ function onImgGalleryScroll(evt) {
     arrImg.map((arr) => {
         arrSrc.push(arr.original);
     });
+
     let currentInd = arrSrc.indexOf(lightboxImage.src);
+
     if (evt.code == 'ArrowLeft')
     {
         lightboxImage.src = arrSrc[currentInd + 1];
-
-    } if (evt.code == 'ArrowRight')
+        return;
+    }
+    if (evt.code == 'ArrowRight' && currentInd > 0)
     {
-        if (currentInd === 0)
-        {
-            lightboxImage.src = arrSrc[images.length - 1];
-        } else
-        {
-            lightboxImage.src = arrSrc[currentInd + 1];
-        }
 
+        lightboxImage.src = arrSrc[currentInd - 1];
+        return;
+    }
+    if (evt.code == 'ArrowRight' && currentInd === 0)
+    {
+        currentInd = images.length;
+        lightboxImage.src = arrSrc[currentInd - 1];
     }
 
 };
