@@ -1,4 +1,3 @@
-
 const images = [
     {
         preview:
@@ -65,7 +64,6 @@ const images = [
     },
 ];
 
-
 const galleryEl = document.querySelector('.js-gallery');
 const ModalWindow = document.querySelector('.js-lightbox');
 const ModalWindowClose = document.querySelector('.lightbox__button')
@@ -76,8 +74,7 @@ galleryEl.addEventListener('click', onGalleryElClick);
 ModalWindowClose.addEventListener('click', onModalWindowCloseClick);
 lightboxOverlayEl.addEventListener('click', onOverlayClick);
 
-let arrSrc = [];
-let activeIndex = null;
+let currentInd = null;
 
 function createImgList(images) {
 
@@ -104,41 +101,50 @@ function onGalleryElClick(evt) {
 
     window.addEventListener('keydown', onEscPressClose)
 
+    images.forEach((el, ind) => {
+
+        if (el.preview.includes(evt.target.src))
+        {
+            currentInd = ind;
+        }
+    });
+
     lightboxImage.src = evt.target.getAttribute('data-source');
-
-
 
     ModalWindow.classList.add('is-open');
 
     window.addEventListener('keydown', onImgGalleryScroll)
-
 };
-
 
 function onImgGalleryScroll(evt) {
     evt.preventDefault;
-    const arrImg = [...images];
-    arrImg.map((arr) => {
-        arrSrc.push(arr.original);
-    });
 
-    let currentInd = arrSrc.indexOf(lightboxImage.src);
-
-    if (evt.code == 'ArrowLeft')
+    if (evt.code == 'ArrowLeft' && currentInd > 0)
     {
-        lightboxImage.src = arrSrc[currentInd + 1];
+        currentInd -= 1;
+        lightboxImage.alt = images[currentInd].description;
+        lightboxImage.src = images[currentInd].original;
         return;
     }
-    if (evt.code == 'ArrowRight' && currentInd > 0)
-    {
-
-        lightboxImage.src = arrSrc[currentInd - 1];
-        return;
-    }
-    if (evt.code == 'ArrowRight' && currentInd === 0)
+    if (evt.code == 'ArrowLeft' && currentInd === 0)
     {
         currentInd = images.length;
-        lightboxImage.src = arrSrc[currentInd - 1];
+        lightboxImage.alt = images[currentInd].description;
+        lightboxImage.src = images[currentInd - 1].original;
+        return;
+    }
+    if (evt.code == 'ArrowRight' && currentInd < images.length - 1)
+    {
+        currentInd += 1;
+        lightboxImage.alt = images[currentInd].description;
+        lightboxImage.src = images[currentInd].original;
+        return;
+    }
+    if (evt.code == 'ArrowRight' && currentInd === images.length - 1)
+    {
+        currentInd = 0;
+        lightboxImage.alt = images[currentInd].description;
+        lightboxImage.src = images[currentInd].original;
     }
 
 };
@@ -169,4 +175,3 @@ function onEscPressClose(evt) {
         onModalWindowCloseClick();
     };
 };
-
